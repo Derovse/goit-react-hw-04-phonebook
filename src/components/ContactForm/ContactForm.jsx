@@ -1,61 +1,58 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-class ContactForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: '',
-      number: '',
-    };
-  }
+const ContactForm = ({ addContact }) => {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault();
-    const { name, number } = this.state;
-    this.props.addContact(name, number);
-    this.setState({ name: '', number: '' });
+    addContact(name, number);
+    setName('');
+    setNumber('');
   };
 
-  handleInputChange = e => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     if (name === 'number') {
       const isValidPhoneNumber = value.match(/^[\d\s()-]*$/);
       if (!isValidPhoneNumber) return;
     }
-    this.setState({ [name]: value });
+    if (name === 'name') {
+      const isValidName = value.match(/[A-Za-zА-Яа-я]+/);
+      if (!isValidName) return;
+    }
+    if (name === 'number') setNumber(value);
+    if (name === 'name') setName(value);
   };
 
-  render() {
-    const { name, number } = this.state;
-    return (
-      <form className="contact-form" onSubmit={this.handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          pattern="[A-Za-zА-Яа-я]+"
-          title="Name may contain only letters"
-          value={name}
-          onChange={this.handleInputChange}
-          required
-        />
+  return (
+    <form className="contact-form" onSubmit={handleSubmit}>
+      <input
+        type="text"
+        name="name"
+        pattern="[A-Za-zА-Яа-я]+"
+        title="Name may contain only letters"
+        value={name}
+        onChange={handleInputChange}
+        required
+      />
 
-        <input
-          type="tel"
-          name="number"
-          pattern="[0-9]+"
-          title="Phone number must be digits"
-          value={number}
-          onChange={this.handleInputChange}
-          required
-        />
+      <input
+        type="tel"
+        name="number"
+        pattern="[0-9]+"
+        title="Phone number must be digits"
+        value={number}
+        onChange={handleInputChange}
+        required
+      />
 
-        <button type="submit">Add contact</button>
-      </form>
-    );
-  }
-}
-// jopa
+      <button type="submit">Add contact</button>
+    </form>
+  );
+};
+
 ContactForm.propTypes = {
   addContact: PropTypes.func.isRequired,
 };
